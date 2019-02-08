@@ -1,0 +1,332 @@
+REPORT  ZEX_ONE.
+
+Data: Firstname(20),
+      Lastname(20).
+PARAMETERS: FULLNAME(20).
+SPLIT FULLNAME at ' 'into FirstName LastName.
+
+WRITE: 'FullName :', FULLNAME.
+WRITE: 'FIRSTName :', FIRSTNAME.
+WRITE: 'LastName :', LASTNAME.
+
+
+
+----------------------------------------X-------------------------------------
+
+
+REPORT  ZEX_TWO.
+
+PARAMETERS: datael type String.
+*BREAK-POINT.
+Data: info type string.
+Data: reg1 type String VALUE '/BI0/OI', reg2 type String VALUE '/BIC/OI'.
+
+IF ( reg1 co datael ) OR ( reg2 co datael ).
+  IF ( reg1 co datael ).
+    info = datael+3(1) && datael+7.
+  ELSE.
+    info = datael+7.
+  ENDIF.
+  Write: info.
+
+ELSE.
+  WRITE: 'Error'.
+ENDIF.
+
+
+-------------------------------------------X----------------------------------
+
+
+REPORT  ZEX_THREE.
+
+
+
+*PARAMETERS: info type string.
+*Data: reg1 type String VALUE '/BI0/OI',
+*      reg2 type String VALUE '/BIC/OI',
+*      datael type String.
+*
+*IF info+0(1) = '0'.
+*  datael = reg1 && info+1.
+*ELSE.
+*  datael = reg2 && info.
+*ENDIF.
+*
+*Write: datael.
+
+
+
+PARAMETERS: info(9) type c.
+Data: reg1(7) type c VALUE '/BI0/OI',
+      reg2(7) type c VALUE '/BIC/OI',
+      datael(16) type c.
+
+IF info+0(1) = '0'.
+  datael = reg1 && info+1.
+ELSE.
+  datael = reg2 && info.
+ENDIF.
+
+Write: datael.
+
+
+---------------------------------------X--------------------------------------
+
+
+
+
+REPORT  ZEX_FOUR.
+
+
+PARAMETERS NUMBER type String.
+
+Data: index type i,
+      len type i,
+      jndex type i,
+      corrected type string,
+      first type string,
+      last type string.
+len = STRLEN( NUMBER ).
+index = 0.
+jndex = 0.
+WHILE index <> len - 1.
+  IF NUMBER+index(1) CO SY-ABCDE.
+    EXIT.
+  ENDIF.
+  INDEX = INDEX + 1.
+ENDWHILE.
+
+JNDEX = INDEX.
+INDEX = INDEX + 1.
+
+WRITE : INDEX.
+
+first = Number(jndex) && Number+INDEX.
+Write: first.
+
+
+
+*Data: pos type i.
+*
+*IF Number ca sy-abcde.
+*pos = sy-fdpos + 1.
+*ENDIF.
+*Write: pos.
+*REPLACE ALL OCCURRENCES OF NUMBER+sy-fdpos(1) IN NUMBER with ''.
+*WRITE: number.
+
+
+-------------------------------------------X---------------------------------------
+
+
+REPORT  ZEMP_RDINSERT.
+
+
+types: BEGIN OF structure,
+  EMPLOYEE_ID type /BIC/OIZ_RDEMPID,
+  EMPLOYEE_NAME type /BIC/OIZ_RDEMPNA,
+  EMPLOYEE_STATE type /BIC/OIZ_RDEMPST,
+  EMPLOYEE_PHONE type /BIC/OIZ_EMPPHN,
+  EMPLOYEE_DOB type /BIC/OIZ_REMPDOB,
+  EMPLOYEE_DOJ type /BIC/OIZ_RDEMPJ,
+  EMPLOYEE_SALARY type /BIC/OIZ_RDEMPSL,
+  EMPLOYEE_CURRENCY TYPE /BI0/OICURRENCY ,
+END OF structure.
+
+data: it_emp TYPE STANDARD TABLE OF structure.
+data: wa_emp TYPE structure.
+
+
+
+**PARAMETERS:
+*wa_emp-EMPLOYEE_ID,
+*wa_emp-EMPLOYEE_NAME,
+*wa_emp-EMPLOYEE_STATE,
+*wa_emp-EMPLOYEE_PHONE,
+*wa_emp-EMPLOYEE_DOB,
+*wa_emp-EMPLOYEE_DOJ,
+*wa_emp-EMPLOYEE_SALARY,
+*wa_emp-EMPLOYEE_CURRENCY.
+
+
+*APPEND wa_emp to it_emp.
+*insert ZEMP_RDTAB from wa_emp.
+
+*Delete from ZEMP_RDTAB where Employee_id = 'E005'.
+
+
+
+Select * from ZEMP_RDTAB into Table it_emp.
+
+LOOP AT it_emp into wa_emp.
+  wa_emp-EMPLOYEE_CURRENCY = 'USD'.
+  MODIFY it_emp from wa_emp.
+ENDLOOP.
+
+Write: 'Good'.
+
+
+------------------------------------------------------X----------------------------------------
+
+
+REPORT  ZRD_CALCULATOR.
+
+
+data: a type decfloat34.
+data: b type decfloat34.
+PARAMETERS: X(12) TYPE c, Y(12) TYPE c, operator(2) TYPE c.
+TRY .
+a = x.
+b = y.
+
+CATCH CX_SY_CONVERSION_NO_NUMBER.
+  Write: 'Please enter number in X and Y'.
+  EXIT.
+ENDTRY.
+
+CONDENSE operator.
+
+
+*PARAMETERS: a type decfloat34, b type decfloat34 , operator(2) type c.
+data: d type decfloat34 .
+data: c type c.
+IF operator = '+'.
+d = a + b.
+Write: 'ADDITION:',d.
+
+
+
+ELSEIF operator = '-'.
+d = a - b.
+Write: 'Subtraction:',d.
+
+
+
+ELSEIF operator = '*'.
+d = a * b.
+Write: 'MULTIPLICATION:',d.
+
+
+
+ELSEIF operator = '/'.
+  TRY .
+    DIVIDE a by b.
+    Write: 'DIVISION:',a.
+  CATCH CX_SY_ZERODIVIDE.
+    Write: 'Divide by zero'.
+  ENDTRY.
+
+
+ELSEIF operator = '**'.
+    TRY .
+      d = a ** b.
+      Write: d.
+    CATCH CX_SY_ARITHMETIC_OVERFLOW.
+      Write: 'Infinite'.
+    ENDTRY.
+
+
+Else.
+  Write: 'Not a valid operator USE + - * / **'.
+Endif.
+
+
+-------------------------------------------------X-------------------------------------------------------------------------------------------------
+
+
+
+REPORT  ZEMP_RDUSEMOD.
+
+
+types: BEGIN OF STRUCTURE,
+  ID TYPE /BIC/OIZ_RDEMPID,
+  NAME TYPE /BIC/OIZ_RDEMPNA,
+  DOB TYPE /BIC/OIZ_REMPDOB,
+END OF STRUCTURE.
+
+DATA: IT_USEEMP TYPE STANDARD TABLE OF STRUCTURE.
+DATA: N TYPE /BIC/OIZ_RDEMPNA VALUE 'RAMU'.
+DATA: WA_USEEMP TYPE STRUCTURE.
+
+
+*-------------------------INSERTING INTO DATABASE ZEMP_USE--------------------------------
+*WA_USEEMP-ID = 'E001'.
+*WA_USEEMP-NAME = 'RISHAV'.
+*WA_USEEMP-DOB = '19960910'.
+*APPEND WA_USEEMP TO IT_USEEMP.
+*INSERT ZEMP_USE FROM WA_USEEMP.
+
+*WA_USEEMP-ID = 'E002'.
+*WA_USEEMP-NAME = 'RYAN'.
+*WA_USEEMP-DOB = '19760910'.
+*APPEND WA_USEEMP TO IT_USEEMP.
+**INSERT ZEMP_USE FROM WA_USEEMP.
+*
+*WA_USEEMP-ID = 'E003'.
+*WA_USEEMP-NAME = 'SONIKA'.
+*WA_USEEMP-DOB = '19960810'.
+*APPEND WA_USEEMP TO IT_USEEMP.
+**INSERT ZEMP_USE FROM WA_USEEMP.
+*
+*WA_USEEMP-ID = 'E004'.
+*WA_USEEMP-NAME = 'ANUPAM'.
+*WA_USEEMP-DOB = '19970910'.
+*APPEND WA_USEEMP TO IT_USEEMP.
+**INSERT ZEMP_USE FROM WA_USEEMP.
+*
+*WA_USEEMP-ID = 'E005'.
+*WA_USEEMP-NAME = 'SHAZEEM'.
+*WA_USEEMP-DOB = '19960910'.
+*APPEND WA_USEEMP TO IT_USEEMP.
+**INSERT ZEMP_USE FROM WA_USEEMP.
+*
+*WA_USEEMP-ID = 'E006'.
+*WA_USEEMP-NAME = 'RISHAV'.
+*WA_USEEMP-DOB = '19960910'.
+*APPEND WA_USEEMP TO IT_USEEMP.
+**INSERT ZEMP_USE FROM WA_USEEMP.
+*
+*WA_USEEMP-ID = 'E007'.
+*WA_USEEMP-NAME = 'PRATYUSHA'.
+*WA_USEEMP-DOB = '19960910'.
+*APPEND WA_USEEMP TO IT_USEEMP.
+**INSERT ZEMP_USE FROM WA_USEEMP.
+*
+*WA_USEEMP-ID = 'E008'.
+*WA_USEEMP-NAME = 'SHASHI'.
+*WA_USEEMP-DOB = '19960910'.
+*APPEND WA_USEEMP TO IT_USEEMP.
+**INSERT ZEMP_USE FROM WA_USEEMP.
+*
+*WA_USEEMP-ID = 'E009'.
+*WA_USEEMP-NAME = 'RAKESH'.
+*WA_USEEMP-DOB = '19960910'.
+*APPEND WA_USEEMP TO IT_USEEMP.
+
+*-------------------------------------------------------X-------------------------------------
+
+
+
+
+*-------------------DELETING AND MODIFYING DATA IN INTERNAL TABLE IT_USEEMP-------------------
+*DELETE IT_USEEMP WHERE ID = 'E001'.
+*WA_USEEMP-NAME = 'RAMU'.
+*MODIFY IT_USEEMP FROM WA_USEEMP TRANSPORTING NAME WHERE NAME = 'PRATYUSHA'.
+
+*-------------------------------------------------------X--------------------------------------
+
+
+
+*------------------DELETING AND MODIFYING DATA FROM DATABASE-----------------------------------
+*DELETE FROM ZEMP_USE WHERE ID = 'E001'.
+WA_USEEMP-NAME = 'RAMU'.
+*MODIFY ZEMP_USE FROM WA_USEEMP TRANSPORTING NAME WHERE NAME = 'PRATYUSHA'.
+UPDATE ZEMP_USE SET NAME = 'RAMU' WHERE NAME = 'PRATYUSHA'.
+*-------------------------------------------------------X---------------------------------------
+
+
+
+WRITE: 'SAP'.
+
+
+-------------------------------------------------X---------------------------------------------------------------------------------------
