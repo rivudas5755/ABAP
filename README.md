@@ -1,9 +1,6 @@
 # ABAP
-Abap Training IN Cognizant Training
+Hi here are some of the entry level codes.
 
+See if you can help yourself.
 
-Hi These are the programs that are written by Rishav.
-
-help Yourself.
-
-Happy Coding \m/
+Any comments are actually welcome.
