@@ -1,0 +1,308 @@
+*&---------------------------------------------------------------------*
+*& Report  ZEMP_RDTABWRKS
+*&
+*&---------------------------------------------------------------------*
+*&
+*&
+*&---------------------------------------------------------------------*
+
+REPORT  ZEMP_RDTABWRKS.
+
+
+  TYPES: BEGIN OF STRUCTURE,
+    name(20) type c,
+    amount type INT4,
+    END OF STRUCTURE.
+
+      TYPES: BEGIN OF STRUCTURE2,
+    name(20) type c,
+    amount type INT4,
+    COUNT TYPE I,
+    END OF STRUCTURE2.
+
+TYPES: BEGIN OF STRUCTURE3,
+  name(20) type c,
+  END OF STRUCTURE3.
+
+TYPES: BEGIN OF STRUCTURE4,
+  name(20) type c,
+  amount type INT4,
+  FOUND(3) TYPE C,
+  END OF STRUCTURE4.
+
+TYPES: BEGIN OF STRUCTURE5,
+  name(20) type c,
+  amount type INT4,
+  COUNT TYPE I,
+  RANK TYPE I,
+  END OF STRUCTURE5.
+
+
+data: itab1 TYPE STANDARD TABLE OF STRUCTURE,
+      itab2 TYPE STANDARD TABLE OF STRUCTURE,
+      itabsort TYPE STANDARD TABLE OF STRUCTURE2,
+      itabsum TYPE STANDARD TABLE OF STRUCTURE2,
+      itab3 TYPE STANDARD TABLE OF STRUCTURE3,
+      itab4 TYPE STANDARD TABLE OF STRUCTURE3,
+      itab_s4 TYPE STANDARD TABLE OF STRUCTURE4,
+      itab_s5 TYPE STANDARD TABLE OF STRUCTURE5 ."Internal Table
+
+data: ac_emp TYPE STRUCTURE,
+      ac1 TYPE STRUCTURE,
+      ac5 TYPE STRUCTURE,
+      ac2 TYPE STRUCTURE2,
+      ac3 TYPE STRUCTURE2,
+      ac4 TYPE STRUCTURE3,
+      ac_itabs4 TYPE STRUCTURE4,
+      ac_itabs5 TYPE STRUCTURE5. "WORK AREA
+
+*--------LOAD INTERNAL TABLE------------
+ac_emp-name = 'JESSE'.
+ac_emp-amount = 100.
+APPEND ac_emp to itab1.
+
+ac_emp-name = 'JESSE'.
+ac_emp-amount = 130.
+APPEND ac_emp to itab1.
+
+ac_emp-name = 'HANK'.
+ac_emp-amount = 220.
+APPEND ac_emp to itab1.
+
+ac_emp-name = 'HANK'.
+ac_emp-amount = 300.
+APPEND ac_emp to itab1.
+
+ac_emp-name = 'JESSE'.
+ac_emp-amount = 30.
+APPEND ac_emp to itab1.
+
+ac_emp-name = 'GUS'.
+ac_emp-amount = -700.
+APPEND ac_emp to itab1.
+
+ac_emp-name = 'WALT'.
+ac_emp-amount = 1000.
+APPEND ac_emp to itab1.
+
+ac_emp-name = 'WALT'.
+ac_emp-amount = -900.
+APPEND ac_emp to itab1.
+
+
+
+ac4-name = 'JESSE'.
+APPEND ac4 to itab3.
+
+ac4-name = 'MIKE'.
+APPEND ac4 to itab3.
+
+ac4-name = 'WHITE'.
+APPEND ac4 to itab3.
+
+ac4-name = 'WALT'.
+APPEND ac4 to itab3.
+
+
+*---------------------------------------
+
+
+*---------------QUESTION 1------------------
+*data: LINO type i.
+*DESCRIBE TABLE itab1 LINES lino.
+*READ TABLE ITAB1 INTO AC_EMP INDEX lino.
+*APPEND AC_EMP to itab2.
+*--------------END QUESTION 1---------------
+
+
+
+*---------------QUESTION 2------------------
+*ITABSORT = ITAB1.
+*
+*data: LINO type i.
+*DESCRIBE TABLE itab1 LINES lino.
+*
+*DATA: COUNT TYPE I VALUE 1,
+*      INDEX TYPE I VALUE 1,
+*      INDEX2 TYPE I VALUE 1,
+*      SUM TYPE INT4 VALUE 0.
+*SORT ITABSORT BY NAME.
+*
+*
+*WHILE INDEX <= LINO.
+*  COUNT = 1.
+*  READ TABLE ITABSORT INTO AC2 INDEX INDEX.
+*  INDEX = INDEX + 1.
+*  SUM = AC2-AMOUNT.
+*  WHILE INDEX <= LINO.
+*    READ TABLE ITABSORT INTO AC3 INDEX INDEX.
+*    IF AC2-NAME = AC3-NAME.
+*      COUNT = COUNT + 1.
+*      SUM = SUM + AC3-AMOUNT.
+*    ELSE.
+*      EXIT.
+*    ENDIF.
+*    INDEX = INDEX + 1.
+*  ENDWHILE.
+*  AC2-COUNT = COUNT.
+*  AC2-AMOUNT = SUM.
+*APPEND AC2 TO ITABSUM.
+*ENDWHILE.
+*
+*
+*CLEAR AC3.
+*LOOP AT ITABSUM INTO AC3.
+*WRITE:/ AC3-NAME,AC3-AMOUNT,AC3-COUNT.
+*ENDLOOP.
+
+*CLEAR AC4.
+*LOOP AT ITAB3 INTO AC4.
+*WRITE:/ AC4-NAME.
+*ENDLOOP.
+*
+*
+*
+*--------------END QUESTION 2---------------
+
+
+*---------------QUESTION 3------------------
+*CLEAR AC4.
+*LOOP AT ITAB1 INTO AC1.
+*  READ TABLE ITAB3 INTO AC4 WITH TABLE KEY name = ac1-name.
+*  IF sy-subrc = 0.
+*    Append ac1 to itab2.
+*
+*  ENDIF.
+*ENDLOOP.
+
+*-------------End QUESTION 3----------------
+
+
+*---------------QUESTION 4------------------
+
+*CLEAR AC4.
+*LOOP AT ITAB1 INTO AC1.
+*  READ TABLE ITAB3 INTO AC4 WITH TABLE KEY name = ac1-name.
+*  IF sy-subrc = 0.
+*    ac_itabs4-name = ac1-name.
+*    ac_itabs4-amount = ac1-amount.
+*    ac_itabs4-FOUND = 'YES'.
+*    Append ac_itabs4 to itab_s4.
+*  ELSE.
+*    ac_itabs4-name = ac1-name.
+*    ac_itabs4-amount = ac1-amount.
+*    ac_itabs4-Found = 'NO'.
+*    Append ac_itabs4 to itab_s4.
+*  ENDIF.
+*ENDLOOP.
+
+*-------------End QUESTION 4----------------
+
+
+*---------------QUESTION 5------------------
+*Data: rank TYPE I value 1.
+*itab_s5 = itabsum.
+*SORT itab_s5 BY AMOUNT.
+*LOOP AT itab_s5 into ac_itabs5.
+*  ac_itabs5-rank = rank.
+*  rank = rank + 1.
+*  MODIFY itab_s5 from ac_itabs5.
+*
+*ENDLOOP.
+*
+*
+*CLEAR AC_ITABS5.
+*LOOP AT ITAB_S5 INTO AC_ITABS5.
+*WRITE:/ AC_ITABS5-NAME,AC_ITABS5-AMOUNT,AC_ITABS5-COUNT,AC_ITABS5-RANK.
+*ENDLOOP.
+
+*-------------End QUESTION 5----------------
+
+
+WRITE:/ 'Happy'.
+
+
+
+
+
+
+
+
+
+REPORT  ZEX_EXC2.
+
+
+TYPES: BEGIN OF STRUCTURE,
+  COUNTRY(20) TYPE C,
+  REGION(20) TYPE C,
+  END OF STRUCTURE.
+
+  DATA: itabstruct11 TYPE STANDARD TABLE OF STRUCTURE,
+        itabstruct12 TYPE STANDARD TABLE OF STRUCTURE. "INTERNET TABLE
+
+  DATA: AC_ITABS11 TYPE STRUCTURE.
+
+
+*-------------------------Data Loading----------------------------------
+
+  AC_ITABS11-COUNTRY = 'INDIA'.
+  AC_ITABS11-REGION = 'ASIA'.
+  APPEND AC_ITABS11 to ITABSTRUCT11.
+
+  AC_ITABS11-COUNTRY = 'NEW ZEALAND'.
+  AC_ITABS11-REGION = 'AUSTRALIA'.
+  APPEND AC_ITABS11 to ITABSTRUCT11.
+
+  AC_ITABS11-COUNTRY = 'JAPAN'.
+  AC_ITABS11-REGION = 'ASIA'.
+  APPEND AC_ITABS11 to ITABSTRUCT11.
+
+  AC_ITABS11-COUNTRY = 'NETHERLANDS'.
+  AC_ITABS11-REGION = 'EU'.
+  APPEND AC_ITABS11 to ITABSTRUCT11.
+
+  AC_ITABS11-COUNTRY = 'ENGLAND'.
+  AC_ITABS11-REGION = 'EU'.
+  APPEND AC_ITABS11 to ITABSTRUCT11.
+
+  AC_ITABS11-COUNTRY = 'POLAND'.
+  AC_ITABS11-REGION = 'EU'.
+  APPEND AC_ITABS11 to ITABSTRUCT11.
+
+*-------------------------------X---------------------------------------
+
+
+
+
+*----------------------------ASIANS---------------------------
+
+*LOOP AT ITABSTRUCT11 INTO AC_ITABS11 where  REGION = 'ASIA'.
+*  WRITE:/ AC_ITABS11-COUNTRY.
+*ENDLOOP.
+
+*------------------------END OF ASIANS------------------------
+
+
+*--------------------------LANDS------------------------------
+
+*LOOP AT ITABSTRUCT11 INTO AC_ITABS11.
+*  IF AC_ITABS11-COUNTRY CS 'LAND'.
+*    WRITE:/ AC_ITABS11-COUNTRY.
+*  ENDIF.
+*
+*ENDLOOP.
+
+*-----------------------END OF LANDS--------------------------
+
+
+*-----------------------REALLIGNMENT--------------------------
+
+*LOOP AT ITABSTRUCT11 INTO AC_ITABS11 where REGION = 'ASIA'.
+*  AC_ITABS11-REGION = 'APAC'.
+*  MODIFY ITABSTRUCT11 FROM AC_ITABS11.
+*ENDLOOP.
+
+*------------------END OF REALLINGMENTS-----------------------
+
+
+WRITE:/ 'BECAUSE AM HAPPY LIKE A ROOM WITHOUT A ROOF'.
