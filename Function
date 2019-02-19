@@ -1,0 +1,66 @@
+FUNCTION ZRIVULEAPYR.
+*"----------------------------------------------------------------------
+*"*"Local Interface:
+*"  IMPORTING
+*"     REFERENCE(YEAR) TYPE  INT4
+*"  EXPORTING
+*"     REFERENCE(LEAP) TYPE  C
+*"----------------------------------------------------------------------
+
+IF YEAR MOD 100 = 0.
+  IF YEAR MOD 400 = 0.
+    LEAP = 'Y'.
+  ELSE.
+    LEAP = 'N'.
+  ENDIF.
+ELSE.
+  IF YEAR MOD 4 = 0.
+    LEAP = 'Y'.
+  ELSE.
+    LEAP = 'N'.
+  ENDIF.
+ENDIF.
+
+ENDFUNCTION.
+
+
+
+
+DATA: LEAP TYPE C,
+      MONTH TYPE STRING,
+      YEAR TYPE STRING,
+      YR TYPE INT4,
+      D TYPE STRING,
+      DAY TYPE STRING.
+
+YEAR = DATE+0(4).
+YR = YEAR.
+MONTH = DATE+4(2).
+
+WRITE:/ YEAR, MONTH.
+
+CALL FUNCTION 'ZRIVULEAPYR'
+EXPORTING YEAR = YR
+IMPORTING LEAP = LEAP.
+
+WRITE :/ LEAP.
+
+IF MONTH = 1 OR MONTH = 3 OR MONTH = 5 OR MONTH = 7 OR MONTH = 8 OR MONTH = 10 OR MONTH = 12.
+  DAY = 31.
+ELSEIF MONTH = 2 AND LEAP = 'Y'.
+  DAY = 29.
+ELSEIF MONTH = 2 AND LEAP = 'N'.
+  DAY = 28.
+ELSE.
+  DAY = 30.
+ENDIF.
+
+D = YEAR && MONTH && DAY.
+LASTDATE = D.
+
+WRITE:/ LASTDATE.
+
+ENDFUNCTION.
+
+
+
