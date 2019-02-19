@@ -1,0 +1,68 @@
+*&---------------------------------------------------------------------*
+*& Report  ZRD_CALCULATOR
+*&
+*&---------------------------------------------------------------------*
+*&
+*&
+*&---------------------------------------------------------------------*
+
+REPORT  ZRD_CALCULATOR.
+
+
+data: a type decfloat34.
+data: b type decfloat34.
+PARAMETERS: X(12) TYPE c, Y(12) TYPE c, operator(2) TYPE c.
+TRY .
+a = x.
+b = y.
+
+CATCH CX_SY_CONVERSION_NO_NUMBER.
+  Write: 'Please enter number in X and Y'.
+  EXIT.
+ENDTRY.
+
+CONDENSE operator.
+
+
+*PARAMETERS: a type decfloat34, b type decfloat34 , operator(2) type c.
+data: d type decfloat34 .
+data: c type c.
+IF operator = '+'.
+d = a + b.
+Write: 'ADDITION:',d.
+
+
+
+ELSEIF operator = '-'.
+d = a - b.
+Write: 'Subtraction:',d.
+
+
+
+ELSEIF operator = '*'.
+d = a * b.
+Write: 'MULTIPLICATION:',d.
+
+
+
+ELSEIF operator = '/'.
+  TRY .
+    DIVIDE a by b.
+    Write: 'DIVISION:',a.
+  CATCH CX_SY_ZERODIVIDE.
+    Write: 'Divide by zero'.
+  ENDTRY.
+
+
+ELSEIF operator = '**'.
+    TRY .
+      d = a ** b.
+      Write: d.
+    CATCH CX_SY_ARITHMETIC_OVERFLOW.
+      Write: 'Infinite'.
+    ENDTRY.
+
+
+Else.
+  Write: 'Not a valid operator USE + - * / **'.
+Endif.
