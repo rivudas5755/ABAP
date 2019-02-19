@@ -1,0 +1,26 @@
+*&---------------------------------------------------------------------*
+*& Report  ZPRK_MESSAGETYPE
+*&
+*&---------------------------------------------------------------------*
+*&
+*&  I-> INFORMATION
+*&  W-> WARNING
+*&  E-> ERROR
+*&  A-> ABEND
+*&  E-> EXIT
+*&  S-> SUCCESS
+*&
+*&---------------------------------------------------------------------*
+
+REPORT  ZPRK_MESSAGETYPE.
+
+PARAMETERS: FRSTNAME TYPE STRING,
+            LSTNAME TYPE STRING.
+DATA:       PATTERN TYPE STRING.
+
+FIND REGEX '[\d]' IN FRSTNAME.
+IF SY-SUBRC = 0.
+  MESSAGE 'YOUR FIRSTNAME CONTAINS NUMERIC DIGITS' TYPE 'I' DISPLAY LIKE 'E'.
+ELSE.
+  MESSAGE FRSTNAMe  type 'I' display like 's'.
+ENDIF.
